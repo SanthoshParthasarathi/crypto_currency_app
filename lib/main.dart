@@ -1,7 +1,10 @@
+import 'package:cryptocurrency_app/app_theme.dart';
 import 'package:cryptocurrency_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppTheme.getThemeValues();
   runApp(MyApp());
 }
 
@@ -13,7 +16,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Crypto Currency App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.deepOrange[100],
       ),
       home: const HomeScreen(),
     );

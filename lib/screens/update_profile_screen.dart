@@ -1,3 +1,4 @@
+import 'package:cryptocurrency_app/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -6,6 +7,8 @@ class UpdateProfileScreen extends StatelessWidget {
 
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
+
+  bool isDarkModeEnabled = AppTheme.isDarkModeEnabled;
 
   Future<void> saveData(String key, String value) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -22,6 +25,7 @@ class UpdateProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isDarkModeEnabled ? Colors.black : Colors.white,
       appBar: AppBar(
         title: Text('Update Profile'),
       ),
@@ -37,17 +41,26 @@ class UpdateProfileScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-Widget customTextFieldWidget(String title, TextEditingController controller) {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: title,
-        border: OutlineInputBorder(),
+  Widget customTextFieldWidget(String title, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        style: TextStyle(color: Colors.white),
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: title,
+          hintStyle: TextStyle(color: isDarkModeEnabled ? Colors.white : null),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: isDarkModeEnabled ? Colors.white : Colors.grey),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: isDarkModeEnabled ? Colors.white : Colors.grey),
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

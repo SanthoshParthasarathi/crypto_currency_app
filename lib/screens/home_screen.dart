@@ -1,3 +1,4 @@
+import 'package:cryptocurrency_app/app_theme.dart';
 import 'package:cryptocurrency_app/model/coin_details_model.dart';
 import 'package:cryptocurrency_app/screens/coin_graph_screen.dart';
 import 'package:cryptocurrency_app/screens/update_profile_screen.dart';
@@ -18,6 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false";
   String name = "";
   String email = "";
+
+  bool isDarkMode = AppTheme.isDarkModeEnabled;
 
   GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
 
@@ -58,65 +61,94 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       key: _globalKey,
       appBar: AppBar(
+        centerTitle: true,
         leading: IconButton(
           onPressed: () {
             _globalKey.currentState!.openDrawer();
           },
-          icon: Icon(
-            Icons.menu,
-            color: Colors.black,
-          ),
+          icon:
+              Icon(Icons.menu, color: isDarkMode ? Colors.white : Colors.black),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         elevation: 0,
         title: Text(
           "CryptoCurrency App",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
         ),
       ),
       drawer: Drawer(
-        child: Column(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(
-                name,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              accountEmail: Text(
-                email,
-                style: TextStyle(
-                  fontSize: 17,
-                ),
-              ),
-              currentAccountPicture: Icon(
-                Icons.account_circle_rounded,
-                size: 70,
-                color: Colors.white,
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UpdateProfileScreen(),
+        child: Container(
+          color: isDarkMode ? Colors.black : Colors.white,
+          child: Column(
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
                   ),
-                );
-              },
-              leading: Icon(Icons.account_box),
-              title: Text(
-                "Update Profile",
-                style: TextStyle(
-                  fontSize: 17,
+                ),
+                accountEmail: Text(
+                  email,
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+                currentAccountPicture: Icon(
+                  Icons.account_circle_rounded,
+                  size: 70,
+                  color: Colors.white,
                 ),
               ),
-            )
-          ],
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UpdateProfileScreen(),
+                    ),
+                  );
+                },
+                leading: Icon(
+                  Icons.account_box,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                title: Text(
+                  "Update Profile",
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 17,
+                  ),
+                ),
+              ),
+              ListTile(
+                onTap: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  setState(() {
+                    isDarkMode = !isDarkMode;
+                  });
+                  AppTheme.isDarkModeEnabled = isDarkMode;
+                  await prefs.setBool('isDarkMode', isDarkMode);
+                },
+                leading: Icon(
+                  isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                title: Text(
+                  isDarkMode ? "Light Mode" : "Dark Mode",
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 17,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
       body: FutureBuilder(
@@ -135,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     vertical: 15,
                   ),
                   child: TextField(
+                    style: TextStyle(color: Colors.white),
                     onChanged: (query) {
                       List<CoinDetailsModel> searchResults =
                           snapshot.data!.where((element) {
@@ -149,18 +182,35 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      hintText: "Search for Coins",
-                    ),
+                        fillColor: Colors.deepOrange[100],
+                        filled: true,
+                        prefixIcon: Icon(Icons.search,
+                            color: isDarkMode ? Colors.black : Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: isDarkMode ? Colors.white : Colors.grey),
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: isDarkMode ? Colors.white : Colors.grey),
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        hintText: "Search for Coins",
+                        hintStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.4)),
                   ),
                 ),
                 Expanded(
                   child: coinDetailsList.isEmpty
                       ? Center(
-                          child: Text("Result not found"),
+                          child: Text(
+                            "Result not found",
+                            style: TextStyle(
+                                color: isDarkMode ? Colors.white : Colors.grey),
+                          ),
                         )
                       : ListView.builder(
                           itemCount: coinDetailsList.length,
@@ -184,49 +234,51 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget coinDetails(CoinDetailsModel model) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: ListTile(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CoinGraphScreen(
-                coinDetailsModel: model,
-              ),
-            ),
-          );
-        },
-        leading: SizedBox(
-            height: 50,
-            width: 50,
-            child: Image.network(model.image.toString())),
-        title: Text(
-          "${model.name}\n${model.symbol}",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-        trailing: RichText(
-          textAlign: TextAlign.end,
-          text: TextSpan(
-              text: "${model.currentPrice}\n",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-              ),
-              children: [
-                TextSpan(
-                  text: "${model.priceChangePercentage24h}%",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
+      child: Column(
+        children: [
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CoinGraphScreen(
+                    coinDetailsModel: model,
                   ),
-                )
-              ]),
-        ),
+                ),
+              );
+            },
+            leading: SizedBox(
+                height: 50,
+                width: 50,
+                child: Image.network(model.image.toString())),
+            title: Text(
+              "${model.name}\n${model.symbol}",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: isDarkMode ? Colors.white : Colors.black),
+            ),
+            trailing: RichText(
+              textAlign: TextAlign.end,
+              text: TextSpan(
+                  text: "${model.currentPrice}\n",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isDarkMode ? Colors.white : Colors.black),
+                  children: [
+                    TextSpan(
+                      text: "${model.priceChangePercentage24h}%",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red,
+                      ),
+                    )
+                  ]),
+            ),
+          ),
+        ],
       ),
     );
   }

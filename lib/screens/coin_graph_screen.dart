@@ -1,3 +1,4 @@
+import 'package:cryptocurrency_app/app_theme.dart';
 import 'package:cryptocurrency_app/model/coin_details_model.dart';
 import 'package:cryptocurrency_app/model/price_and_time_model.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -19,6 +20,7 @@ class CoinGraphScreen extends StatefulWidget {
 class _CoinGraphScreenState extends State<CoinGraphScreen> {
   bool isLoading = true;
   bool isFirstTime = true;
+  bool isDarkMode = AppTheme.isDarkModeEnabled;
 
   List<FlSpot> flSpotList = [];
 
@@ -40,7 +42,7 @@ class _CoinGraphScreenState extends State<CoinGraphScreen> {
     }
 
     String apiUrl =
-        "https://api.coingecko.com/api/v3/coins/${widget.coinDetailsModel.id}/market_chart?vs_currency=inr&days=${day}";
+        "https://api.coingecko.com/api/v3/coins/${widget.coinDetailsModel.id}/market_chart?vs_currency=inr&days=$day";
 
     Uri uri = Uri.parse(apiUrl);
 
@@ -86,10 +88,10 @@ class _CoinGraphScreenState extends State<CoinGraphScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () {
@@ -97,13 +99,13 @@ class _CoinGraphScreenState extends State<CoinGraphScreen> {
           },
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
         title: Text(
           widget.coinDetailsModel.name.toString(),
           style: TextStyle(
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: 22,
           ),
         ),
@@ -127,7 +129,7 @@ class _CoinGraphScreenState extends State<CoinGraphScreen> {
                         text: TextSpan(
                           text: "${widget.coinDetailsModel.name} Price\n",
                           style: TextStyle(
-                            color: Colors.black,
+                            color: isDarkMode ? Colors.white : Colors.black,
                             fontSize: 18,
                           ),
                           children: [
@@ -135,7 +137,7 @@ class _CoinGraphScreenState extends State<CoinGraphScreen> {
                               text:
                                   "Rs.${widget.coinDetailsModel.currentPrice}\n",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: isDarkMode ? Colors.white : Colors.black,
                                 fontSize: 30,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -150,7 +152,7 @@ class _CoinGraphScreenState extends State<CoinGraphScreen> {
                             TextSpan(
                               text: "$maxY",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: isDarkMode ? Colors.white : Colors.black,
                               ),
                             ),
                           ],
